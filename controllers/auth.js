@@ -1,31 +1,60 @@
 const express = require('express');
-const passport = require('passport') , LocalStrategy = require('passport-local').Strategy;
-const { Mongo } = require('../db/connect');
+const { Mongo } = require('../db/mongo');
 const authRouter = express.Router();
 const bcrypt = require('bcrypt');
-
+var jwt = require('express-jwt');
+var jwtoken = require('jsonwebtoken');
+const { token } = require('morgan');
 
 authRouter.route('/signin')
 .post(async function (req,res){
     let user = await Mongo.db.collection('users').findOne({ email:req.body.email });
     if (user){
-        var valid = await validPassword(user.password,req.body.password);
+        var valid = await validPassword(req.body.password,user.password);
         if (valid){
-            res.send("success")
+            delete user.password;
+          
+            var token = jwtoken.sign({email:user.email,name:user.name}, 'shhhhhhared-secret', {algorithm : 'HS256'});
+            res.send({user,Jwt:token})
+            return
         }
     }
     
     res.statusCode = 401;
-    res.send("error")
+    res.send("Invalid email/password")
 })
 
 authRouter.route('/register').post(async function(req, res, next) {
-    // Whatever verifications and checks you need to perform here
+    
+    let user = await Mongo.db.collection('users').findOne({ email:req.body.email });
+    if (user){
+      res.statusCode = 409
+      res.send("Already exists")
+      return
+    }
+
     var hash = await hashPassword(req.body.password)
-    Mongo.db.collection('users').insertOne({email:req.body.email,password:hash});
+    Mongo.db.collection('users').insertOne({email:req.body.email,password:hash,name:req.body.name});
     res.send("done")
   });
 
+authRouter.route('/getbasicinfo').post(
+    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    async function(req,res,next){
+      
+      if (req.user){
+        let user = await Mongo.db.collection('users').findOne({ email:req.user.email });
+        if (user){
+          res.send({Name:user.name,Email:user.email});
+          next();
+          return
+        }
+      }
+
+      res.statusCode = 400
+      res.send({message:"User doesn't exist"})
+      next();
+});
 
   async function hashPassword (password) {
 
@@ -51,5 +80,6 @@ async function validPassword(user_password,hash){
 
     return valid
 }
+
 
 module.exports = authRouter;

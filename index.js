@@ -3,18 +3,19 @@ const morgan = require('morgan')
 const path = require('path');
 const bodyParser = require('body-parser');
 const authRouter = require('./controllers/auth');
-const passport = require('passport');
-const { Mongo } = require('./db/connect');
+const { Mongo } = require('./db/mongo');
+const cors = require('cors')
 
 
 const app = express()
 const port = 3000
 
+app.use(cors());
+app.options('*', cors());
 // logger middleware
-app.use(morgan('combined'))
+app.use(morgan('[:date[clf]] :remote-addr - :method :url :status :res[content-length] - :response-time ms')) 
 // parse body
 app.use(bodyParser.json());
-app.use(passport.initialize())
 // serve static files from this directory
 app.use(express.static(path.join(__dirname,'/www/')))
 

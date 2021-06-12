@@ -87,8 +87,7 @@
           },{
             headers: {
               'Content-Type': 'application/json;charset=UTF-8',
-              'Access-Control-Allow-Origin': true,
-              'Access-Control-Request-Headers': 'Content-Type, x-requested-with'
+              'Access-Control-Allow-Origin': true
             }
           })
           .then(response => {
@@ -106,13 +105,11 @@
               window.localStorage.setItem('token',response.data.Jwt)
 
               // get user basic info
-              axios.post(this.$store.state.backendURL+"/api/auth/getbasicinfo",{
-                 JWT:response.data.Jwt
-              },{
+              axios.post(this.$store.state.backendURL+"/api/auth/getbasicinfo",null,{
                  headers: {
                     'Content-Type': 'application/json;charset=UTF-8',
                     'Access-Control-Allow-Origin': true,
-                    'Access-Control-Request-Headers': 'Content-Type, x-requested-with'
+                    'Authorization': 'Bearer '+response.data.Jwt
                  }
               })
               .then(response => {
@@ -126,7 +123,7 @@
               this.$router.push('/Home')
           })
           .catch(err =>  {
-              this.$toasted.show(err.response.data.Message,{
+              this.$toasted.show(err.response.data,{
                 theme: "bubble", 
                 duration : 5000,
                 icon:'check', 

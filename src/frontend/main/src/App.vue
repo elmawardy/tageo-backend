@@ -18,12 +18,11 @@ export default {
       this.$store.commit('changeLoginState',true)
 
       axios.post(this.$store.state.backendURL+"/api/auth/getbasicinfo",{
-          JWT:token
-      },{
           headers: {
             'Content-Type': 'application/json;charset=UTF-8',
             'Access-Control-Allow-Origin': true,
-            'Access-Control-Request-Headers': 'Content-Type, x-requested-with'
+            'Access-Control-Request-Headers': 'Content-Type, x-requested-with',
+            'Authorization': 'Bearer '+token
           }
       })
       .then(response => {

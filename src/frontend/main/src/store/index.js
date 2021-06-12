@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    backendURL:'http://172.27.176.157',
+    backendURL:'http://172.22.160.251:3000',
     isPickingLocation:false,
     isWritingTagDetails:false,
     loadingOverlay:false,

@@ -296,17 +296,7 @@ export default {
         this.showAddTagDialog = val
       },
       signout(){
-        axios.post(this.$store.state.backendURL+"/api/auth/signout",{
-           JWT:window.localStorage.getItem('token')
-        },{
-           headers: {
-              'Content-Type': 'application/json;charset=UTF-8',
-              'Access-Control-Allow-Origin': true,
-              'Access-Control-Request-Headers': 'Content-Type, x-requested-with'
-           }
-        })
-        .then(response => {
-           this.$toasted.show(response.data.Message,{
+         this.$toasted.show("signed out",{
               theme: "bubble", 
               duration : 5000,
               icon:'check', 
@@ -321,20 +311,45 @@ export default {
             window.localStorage.removeItem('userName')
             this.$store.commit('changeLoginState',false)
             this.$store.commit('changeUserName','')
-        })
-        .catch(err =>  {
-           this.$toasted.show(err.response.data.Message,{
-              theme: "bubble", 
-              duration : 5000,
-              icon:'check', 
-              action : {
-                text : 'Close',
-                onClick : (e, toastObject) => {
-                    toastObject.goAway(0);
-                }
-              },
-            })
-        })
+        // axios.post(this.$store.state.backendURL+"/api/auth/signout",{
+        //    JWT:window.localStorage.getItem('token')
+        // },{
+        //    headers: {
+        //       'Content-Type': 'application/json;charset=UTF-8',
+        //       'Access-Control-Allow-Origin': true,
+        //       'Access-Control-Request-Headers': 'Content-Type, x-requested-with'
+        //    }
+        // })
+        // .then(response => {
+        //    this.$toasted.show(response.data.Message,{
+        //       theme: "bubble", 
+        //       duration : 5000,
+        //       icon:'check', 
+        //       action : {
+        //         text : 'Close',
+        //         onClick : (e, toastObject) => {
+        //             toastObject.goAway(0);
+        //         }
+        //       },
+        //     })
+        //     window.localStorage.removeItem('token')
+        //     window.localStorage.removeItem('userName')
+        //     this.$store.commit('changeLoginState',false)
+        //     this.$store.commit('changeUserName','')
+        // })
+        // .catch(err =>  {
+        //    this.$toasted.show(err.response.data.Message,{
+        //       theme: "bubble", 
+        //       duration : 5000,
+        //       icon:'check', 
+        //       action : {
+        //         text : 'Close',
+        //         onClick : (e, toastObject) => {
+        //             toastObject.goAway(0);
+        //         }
+        //       },
+        //     })
+        // })
       },
       TagInfoPickupCallback(taginfo){
         this.$store.commit('updateLoadingOverlay',{'value':true})
