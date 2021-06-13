@@ -36,15 +36,6 @@ pipeline {
             }
         }
 
-        stage("Test") {
-            steps {
-                sh """
-                    echo 'creating image for unit testing'
-                    docker build --target dev -t ${IMAGE_REPO_NAME}:build -f Dockerfile .
-                """
-            }
-        }
-
         stage("Build") {
             steps {
                 sh """
