@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') { checkout scm }
         stage('Init') {
             steps {
                 updateGitlabCommitStatus name: 'build', state: 'pending'
