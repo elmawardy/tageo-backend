@@ -4,9 +4,9 @@ pipeline {
     stages {
         stage('Init') {
             steps {
-                updateGitlabCommitStatus name: 'init', state: 'pending'
+                updateGitlabCommitStatus name: 'build', state: 'pending'
                 echo 'Allah Akbar'
-                updateGitlabCommitStatus name: 'init', state: 'success'
+                updateGitlabCommitStatus name: 'build', state: 'success'
             }
         }
     }
