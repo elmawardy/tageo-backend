@@ -21,6 +21,7 @@ pipeline {
                 sh '''
                     echo "calculating next image tag ..."
                     latest="$(aws ecr describe-images --repository-name=${IMAGE_REPO_NAME} --region=${AWS_DEFAULT_REGION}  --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' | jq . --raw-output)"
+                    latest=$([ "$latest" == 'null' ] && echo '1.0' || echo "$latest")
                     echo "Latest tag = $latest"
                     iIMAGE_TAG=$(echo "$latest + 1.0" | bc)
                     iIMAGE_TAG=$(echo "scale=1; $iIMAGE_TAG/1" | bc)
