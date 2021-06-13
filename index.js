@@ -6,7 +6,6 @@ const authRouter = require('./controllers/auth');
 const { Mongo } = require('./db/mongo');
 const cors = require('cors')
 
-
 const app = express()
 const port = 3000
 
