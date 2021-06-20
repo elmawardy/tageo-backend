@@ -65,8 +65,8 @@ pipeline {
                     rm -rf tageo-infra
                     git clone git@54.147.227.129:/root/tageo-infra.git
                     cd tageo-infra
+                    sed -i 's/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:[0-9]\\+\\.[0-9]\\+/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:${IMAGE_TAG}/g' web.deployment.yaml
                 """
-                sh """sed -i 's/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:[0-9]\\+\\.[0-9]\\+/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:${IMAGE_TAG}/g' web.deployment.yaml """
                 sh """
                     git config user.email "jenkins@ci.elmawardy"
                     git config user.name "jenkins"
