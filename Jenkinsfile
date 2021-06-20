@@ -73,6 +73,7 @@ pipeline {
                     git config remote.origin.url git@54.147.227.129:/root/tageo-infra.git
                     git add .
                     git commit -m 'update k8s version'
+                    git pull
                     git push origin HEAD:master
                 """
             }
