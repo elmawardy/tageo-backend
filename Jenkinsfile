@@ -59,7 +59,7 @@ pipeline {
         stage("Update k8s on git") {
             steps {
                 sh """
-                    echo "Updating k8s deployment image version in git..."
+                    echo 'Updating k8s deployment image version in git...'
                     sed -i 's/${IMAGE_REPO_NAME}:[0-9]\+\.[0-9]\+/${IMAGE_REPO_NAME}:${IMAGE_TAG}/g' k8s/web.deployment.yaml
                     git add .
                     git commit -m "update k8s version"
