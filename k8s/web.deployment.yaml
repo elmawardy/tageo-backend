@@ -15,7 +15,7 @@ spec:
         app: tageo
     spec:
       containers:
-      - image: 052339481502.dkr.ecr.us-east-1.amazonaws.com/tageo:4.0
+      - image: 052339481502.dkr.ecr.us-east-1.amazonaws.com/tageo:19.0
         name: tageo
         ports:
         - containerPort: 80
