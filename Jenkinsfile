@@ -66,14 +66,13 @@ pipeline {
                     git clone git@54.147.227.129:/root/tageo-infra.git
                     cd tageo-infra
                     sed -i 's/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:[0-9]\\+\\.[0-9]\\+/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:${IMAGE_TAG}/g' web.deployment.yaml
-                """
-                sh """
+
                     git config user.email "jenkins@ci.elmawardy"
                     git config user.name "jenkins"
                     git config remote.origin.url git@54.147.227.129:/root/tageo-infra.git
                     git add .
                     git commit -m 'update k8s version'
-                    git pull origin master --allow-unrelated-histories
+                    git pull origin master
                     git push origin HEAD:master
                 """
             }
