@@ -62,6 +62,7 @@ pipeline {
                     echo 'Updating k8s deployment image version in git...'
                 """
                 sh """
+                    rm -rf tageo-infra
                     git clone git@54.147.227.129:/root/tageo-infra.git
                     cd tageo-infra
                 """
