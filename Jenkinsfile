@@ -61,12 +61,15 @@ pipeline {
                 sh """
                     echo 'Updating k8s deployment image version in git...'
                 """
+                sh """
+                    git clone git@54.147.227.129:/root/tageo-infra.git
+                    cd tageo-infra
+                """
                 sh """sed -i 's/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:[0-9]\\+\\.[0-9]\\+/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:${IMAGE_TAG}/g' k8s/web.deployment.yaml """
                 sh """
-                    cat k8s/web.deployment.yaml
                     git config user.email "jenkins@ci.elmawardy"
                     git config user.name "jenkins"
-                    git config remote.origin.url git@54.147.227.129:/root/tageo.git
+                    git config remote.origin.url git@54.147.227.129:/root/tageo-infra.git
                     git add .
                     git commit -m 'update k8s version'
                     git push origin HEAD:master
