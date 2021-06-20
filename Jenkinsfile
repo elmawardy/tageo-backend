@@ -63,7 +63,7 @@ pipeline {
                 """
                 sh """sed -i 's/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:[0-9]+\\.[0-9]+/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:${IMAGE_TAG}/g' k8s/web.deployment.yaml """
                 sh """
-                    git remote set-url origin git@54.147.227.129:/root/tageo.git
+                    git remote add jenkins git@54.147.227.129:/root/tageo.git
                     git add .
                     git commit -m "update k8s version"
                     git push
