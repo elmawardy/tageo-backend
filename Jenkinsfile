@@ -66,6 +66,7 @@ pipeline {
                     cat k8s/web.deployment.yaml
                     git config user.email "jenkins@ci.elmawardy"
                     git config user.name "jenkins"
+                    git config remote.origin.url git@54.147.227.129:/root/tageo.git
                     git add .
                     git commit -m 'update k8s version'
                     git push origin HEAD:master
