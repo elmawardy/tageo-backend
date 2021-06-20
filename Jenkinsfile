@@ -60,7 +60,9 @@ pipeline {
             steps {
                 sh """
                     echo 'Updating k8s deployment image version in git...'
-                    sed -i 's/52339481502.dkr.ecr.us-east-1.amazonaws.com\/tageo:[0-9]\+\.[0-9]\+/52339481502.dkr.ecr.us-east-1.amazonaws.com\/tageo:${IMAGE_TAG}/g' k8s/web.deployment.yaml
+                """
+                sh "sed -i 's/052339481502.dkr.ecr.us-east-1.amazonaws.com\/tageo:[0-9]\+\.[0-9]\+/052339481502.dkr.ecr.us-east-1.amazonaws.com\/tageo:${IMAGE_TAG}/g' k8s/web.deployment.yaml"
+                sh """    
                     git add .
                     git commit -m "update k8s version"
                     git push
