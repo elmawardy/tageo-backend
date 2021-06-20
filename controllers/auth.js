@@ -4,7 +4,7 @@ const authRouter = express.Router();
 const bcrypt = require('bcrypt');
 var jwt = require('express-jwt');
 var jwtoken = require('jsonwebtoken');
-const { token } = require('morgan');
+mongodb = require('mongodb')
 
 authRouter.route('/signin')
 .post(async function (req,res){
@@ -14,8 +14,8 @@ authRouter.route('/signin')
         if (valid){
             delete user.password;
           
-            var token = jwtoken.sign({email:user.email,name:user.name}, 'shhhhhhared-secret', {algorithm : 'HS256'});
-            res.send({user,Jwt:token})
+            var token = jwtoken.sign({email:user.email,name:user.name,id:user._id}, 'shhhhhhared-secret', {algorithm : 'HS256'});
+            res.send({user:{email:user.email,name:user.name},Jwt:token})
             return
         }
     }
@@ -43,7 +43,7 @@ authRouter.route('/getbasicinfo').post(
     async function(req,res,next){
       
       if (req.user){
-        let user = await Mongo.db.collection('users').findOne({ email:req.user.email });
+        let user = await Mongo.db.collection('users').findOne({ _id: new mongodb.ObjectId(req.user.id) });
         if (user){
           res.send({Name:user.name,Email:user.email});
           next();
@@ -55,6 +55,65 @@ authRouter.route('/getbasicinfo').post(
       res.send({message:"User doesn't exist"})
       next();
 });
+
+authRouter.route('/updatebasicinfo')
+.post(
+  jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+  async function(req,res){
+    await Mongo.db.collection('users').updateOne({_id: new mongodb.ObjectId(req.user.id)},{$set: {name: req.body.name}})
+    res.sendStatus(200)
+    return
+  }
+)
+
+authRouter.route('/changepassword')
+.post(
+  jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+  async function(req,res){
+    var user = await Mongo.db.collection('users').findOne({_id : new mongodb.ObjectId(req.user.id)})
+    if (user){
+      var validpassword = await validPassword(req.body.CurrentPassword,user.password);
+      if (validpassword){
+        var newpassword = await hashPassword(req.body.Newpassword)
+        await Mongo.db.collection('users').updateOne({_id: new mongodb.ObjectId(req.user.id)},{$set: {password: newpassword}})
+        res.sendStatus(200)
+        return
+      }else{
+        res.statusCode = 400;
+        res.send("Invalid Password")
+        return
+      }
+    }
+
+    res.sendStatus(404)
+    return
+  }
+)
+
+authRouter.route('/deleteaccount')
+.post(
+  jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+  async function(req,res){
+    var user = await Mongo.db.collection('users').findOne({_id : new mongodb.ObjectId(req.user.id)})
+    if (user){
+      var correctPassword = await validPassword(user.password,req.body.password);
+    }
+    else{
+      res.sendStatus(404)
+      return
+    }
+
+    if (correctPassword){
+      await Mongo.db.collection('tags').deleteMany({userid: req.user.id})
+      await Mongo.db.collection('users').deleteOne({_id : new mongodb.ObjectId(req.user.id)})
+      res.sendStatus(200)
+      return
+    }
+
+    res.sendStatus(401)
+    return
+  }
+)
 
   async function hashPassword (password) {
 

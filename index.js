@@ -3,6 +3,7 @@ const morgan = require('morgan')
 const path = require('path');
 const bodyParser = require('body-parser');
 const authRouter = require('./controllers/auth');
+const tagRouter = require('./controllers/tag');
 const { Mongo } = require('./db/mongo');
 const cors = require('cors')
 
@@ -23,6 +24,7 @@ app.set('view engine','ejs')
 
 // routes
 app.use('/api/auth',authRouter)
+app.use('/api/tag',tagRouter)
 
 
 Mongo.connect();
