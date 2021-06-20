@@ -63,9 +63,11 @@ pipeline {
                 """
                 sh """sed -i 's/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:[0-9]+\\.[0-9]+/052339481502.dkr.ecr.us-east-1.amazonaws.com\\/tageo:${IMAGE_TAG}/g' k8s/web.deployment.yaml """
                 sh """
+                    git config user.email "jenkins@ci.elmawardy"
+                    git config user.name "jenkins"
                     git add .
                     git commit -m "update k8s version"
-                    GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa' git push
+                    git push origin HEAD:master
                 """
             }
         }
