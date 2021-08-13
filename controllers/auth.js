@@ -96,22 +96,21 @@ authRouter.route('/deleteaccount')
   async function(req,res){
     var user = await Mongo.db.collection('users').findOne({_id : new mongodb.ObjectId(req.user.id)})
     if (user){
-      var correctPassword = await validPassword(user.password,req.body.password);
+      let correctPassword = await validPassword(req.body.password,user.password);
+      if (correctPassword){
+        await Mongo.db.collection('tags').deleteMany({userid: req.user.id})
+        await Mongo.db.collection('users').deleteOne({_id : new mongodb.ObjectId(req.user.id)})
+        res.sendStatus(200)
+        return
+      }
+
+      res.sendStatus(401)
+      return
     }
     else{
       res.sendStatus(404)
       return
     }
-
-    if (correctPassword){
-      await Mongo.db.collection('tags').deleteMany({userid: req.user.id})
-      await Mongo.db.collection('users').deleteOne({_id : new mongodb.ObjectId(req.user.id)})
-      res.sendStatus(200)
-      return
-    }
-
-    res.sendStatus(401)
-    return
   }
 )
 

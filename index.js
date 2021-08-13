@@ -3,12 +3,14 @@ const morgan = require('morgan')
 const path = require('path');
 const bodyParser = require('body-parser');
 const authRouter = require('./controllers/auth');
-const tagRouter = require('./controllers/tag');
+const postsRouter = require('./controllers/posts');
+const groupsRouter = require('./controllers/groups');
+const mediaRouter = require('./controllers/media');
 const { Mongo } = require('./db/mongo');
 const cors = require('cors')
 
 const app = express()
-const port = 3000
+const port = 3030
 
 app.use(cors());
 app.options('*', cors());
@@ -24,10 +26,13 @@ app.set('view engine','ejs')
 
 // routes
 app.use('/api/auth',authRouter)
-app.use('/api/tag',tagRouter)
+app.use('/api/tags',postsRouter)
+app.use('/api/posts',postsRouter)
+app.use('/api/groups',groupsRouter)
+app.use('/api/media',mediaRouter)
 
 
 Mongo.connect();
-app.listen(3000,()=>{
+app.listen(port,'0.0.0.0',()=>{
     console.log(`Example app listening at http://0.0.0.0:${port}`)
 })
