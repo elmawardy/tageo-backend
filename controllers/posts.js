@@ -3,7 +3,6 @@ const { Mongo } = require('../db/mongo');
 const postsRouter = express.Router();
 var jwt = require('express-jwt');
 mongodb = require('mongodb')
-var L = require('leaflet');
 
 
 postsRouter.route('/add')
@@ -16,7 +15,7 @@ postsRouter.route('/add')
         return new mongodb.ObjectId(group)
     })
 
-    await Mongo.db.collection('posts').insertOne({title:req.body.title,coordinates: req.body.coordinates,description: req.body.description,labels: req.body.labels,user_id:req.user.id,votes:0,groups:groupsObjects,publish_date:new Date(),custom_fields:req.body.custom_fields})
+    await Mongo.db.collection('posts').insertOne({title:req.body.title,coordinates: req.body.coordinates,description: req.body.description,labels: req.body.labels,user_id:req.user.id,votes:0,groups:groupsObjects,publish_date:new Date(),custom_fields:req.body.custom_fields,user_votes:[]})
 
 
     res.send("Success")
@@ -64,14 +63,49 @@ postsRouter.route('/delete')
 postsRouter.route('/vote').post(
     jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
     async function(req,res){
-        await Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$push:{
-            user_votes: {user_id:new mongodb.ObjectId(req.user.id),isvoteup:req.body.isvoteup}
-        }})
+        
+        if (req.body.state == "up"){
+            await Promise.all([
+                Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$pull:{
+                    user_votes : {'user_id':new mongodb.ObjectId(req.user.id)}
+                }}),
+                Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$push:{
+                    user_votes : {user_id:new mongodb.ObjectId(req.user.id),state:"up"}
+                }}),
+                Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$inc:{votes: 1}})
+            ])
+        }
+        else if (req.body.state == "down"){
+            Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$pull:{
+                user_votes : {'user_id':new mongodb.ObjectId(req.user.id)}
+            }}),
+            Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$push:{
+                user_votes : {user_id:new mongodb.ObjectId(req.user.id),state:"down"}
+            }}),
+            Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$inc:{votes: -1}})
+        }
 
-        if (req.body.isvoteup)
-        await Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$inc:{votes: 1}})
-        else
-        await Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$inc:{votes: -1}})
+        else if (req.body.state == "neutral"){
+            var user_vote = await Mongo.db.collection('posts').find({_id: new mongodb.ObjectId(req.body.post_id),"user_votes.user_id":new mongodb.ObjectId(req.user.id)}).project({"user_votes":1}).toArray()
+
+            if (user_vote){
+                user_vote = user_vote[0].user_votes[0]
+                if (user_vote.state == "up"){
+                    await Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$inc:{votes: -1}})
+                }else if (user_vote.state == "down"){s
+                    await Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$inc:{votes: 1}})
+                }
+                await Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$pull:{
+                    user_votes : {'user_id':new mongodb.ObjectId(req.user.id)}
+                }})
+            }else{
+                res.sendStatus(404)
+                return
+            }
+        }else{
+            res.sendStatus(404)
+            return
+        }
 
         res.sendStatus(200)
     }
@@ -123,6 +157,12 @@ postsRouter.route('/select').post(
         if (req.body.labels){
             findObject.labels = {$in:req.body.labels}
         }
+        var sort = {publish_date:-1}
+        if (req.body.top && req.body.top == true){
+            sort.votes = -1
+            delete sort.publish_date
+        }
+
         var skip = req.body.skip ? req.body.skip : 0;
 
         var posts = await Mongo.db.collection('posts')
@@ -144,7 +184,7 @@ postsRouter.route('/select').post(
                     else: 0 
                 }
             }})
-        .sort({publish_date:-1}).skip(skip).limit(10).toArray()
+        .sort(sort).skip(skip).limit(5).toArray()
         res.send({posts})
         return
     }
