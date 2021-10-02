@@ -25,14 +25,13 @@ authRouter.route('/signin')
         // if user not confirmed
         else{
             res.statusCode = 401;
-            res.send({error:"User not confirmed"})
+            res.send({message:"User not confirmed"})
         }
       }
     
-    res.statusCode = 404;
-    res.send({error:"Invalid email/password"})
+    res.statusCode = 401;
+    res.send({message:"Invalid email/password"})
     return
-  
 })
 
 authRouter.route('/register').post(async function(req, res, next) {
@@ -40,7 +39,7 @@ authRouter.route('/register').post(async function(req, res, next) {
     let user = await Mongo.db.collection('users').findOne({ email:req.body.email });
     if (user){
       res.statusCode = 409
-      res.send("Already exists")
+      res.send({message:"Email already exists"})
       return
     }
 
