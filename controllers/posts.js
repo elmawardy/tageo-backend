@@ -15,10 +15,40 @@ postsRouter.route('/add')
         return new mongodb.ObjectId(group)
     })
 
-    await Mongo.db.collection('posts').insertOne({title:req.body.title,coordinates: req.body.coordinates,description: req.body.description,labels: req.body.labels,user_id:req.user.id,votes:0,groups:groupsObjects,publish_date:new Date(),custom_fields:req.body.custom_fields,user_votes:[]})
+    var rx = /#\S*/g;
+    var hashtags = rx.exec(req.body.article);
+
+    if (hashtags != null)
+        hashtags = hashtags.map((hashtag) => {
+            return hashtag = hashtag.replace("#","").replace(/<\/.+/g,"");
+        })
+    
+    else 
+        hashtags = [];
+
+    var post_id = 0;
+    await Mongo.db.collection('posts').insertOne(
+        {
+            article: req.body.article,
+            hashtags: hashtags,
+            groups:groupsObjects,
+            publish_date:new Date(),
+            locations: req.body.locations.map(l => {return {coords:l}}),
+            polls: req.body.polls,
+            progresses: req.body.progresses,
+            media: [],
+            votes:[],
+            author: new mongodb.ObjectId(req.user.id)
+        })
+        .then(result => {
+            post_id = result.insertedId;
+        })
+
+        // custom_fields:req.body.custom_fields,
+        // coordinates: req.body.coordinates,
 
 
-    res.send("Success")
+    res.send({message:"success",data:{post_id}})
     return
 })
 
