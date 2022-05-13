@@ -152,6 +152,27 @@ postsRouter.route('/comment').post(
     }
 )
 
+
+postsRouter.route('/subcomment').post(
+    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    async function(req,res){
+
+        await Mongo.db.collection('posts').updateOne(
+            {
+                _id: new mongodb.ObjectId(req.body.post_id),
+                "comments._id": new mongodb.ObjectId(req.body.parent_comment_id)
+            },
+            {
+                $push:{
+                    "comments.$.comments" : {_id:new mongodb.ObjectId(), user_id: new mongodb.ObjectId(req.user.id),content: req.body.content,create_date: new Date(),updated_date:new Date()}
+                }
+            }),
+
+        res.sendStatus(200)
+    }
+)
+
+
 postsRouter.route('/editcomment').post(
     jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
     async function(req,res){

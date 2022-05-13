@@ -48,6 +48,9 @@ const Post = new graphql.GraphQLObjectType({
     locations: {type: new graphql.GraphQLList(Location)},
     publish_date: {type: Date},
     media: {type: new graphql.GraphQLList(Media)},
+    comments: {
+      type: new graphql.GraphQLList(Comment)
+    },
     author: {
       type: User,
       resolve: async (post) =>{
@@ -99,6 +102,18 @@ const Location = new graphql.GraphQLObjectType({
   name: 'Location',
   fields: () => ({
     coords: { type: new graphql.GraphQLList(graphql.GraphQLString)}
+  })
+})
+
+const Comment = new graphql.GraphQLObjectType({
+  name: 'Comment',
+  fields: () => ({
+    _id: { type: graphql.GraphQLString },
+    user_id: { type: graphql.GraphQLString },
+    content: { type: graphql.GraphQLString },
+    create_date:  {type: Date},
+    update_date:  {type: Date},
+    comments: {type: new graphql.GraphQLList(Comment)}
   })
 })
 
