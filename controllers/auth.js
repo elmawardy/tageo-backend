@@ -18,7 +18,7 @@ authRouter.route('/signin')
                 delete user.password;
               
                 var token = jwtoken.sign({email:user.email,name:user.name,id:user._id}, 'shhhhhhared-secret', {algorithm : 'HS256'});
-                res.send({user:{email:user.email,name:user.name},Jwt:token})
+                res.send({user:{email:user.email,name:user.name,id:user._id},Jwt:token})
                 return
             }
         }

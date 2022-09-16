@@ -8,8 +8,22 @@ const QueryRoot = new graphql.GraphQLObjectType({
   fields: () => ({
     posts: {
       type: new graphql.GraphQLList(Post),
-      resolve: async () => {
-        var posts = await Mongo.db.collection('posts').find({}).toArray();
+      args: {
+        _id: { type: graphql.GraphQLString,},
+        author_id :{type: graphql.GraphQLString,}
+      },
+      resolve: async (_, {_id,author_id}) => {
+        var posts = [];
+        var filter = {};
+
+        if (_id != null)
+          filter._id = new mongodb.ObjectId(_id)
+        if (author_id !=null)
+          filter.author = new mongodb.ObjectId(author_id)
+        
+        
+        posts = await Mongo.db.collection('posts').find(filter).toArray();
+
         return posts;
       }
     }
@@ -42,20 +56,38 @@ const QueryRoot = new graphql.GraphQLObjectType({
 const Post = new graphql.GraphQLObjectType({
   name: 'Post',
   fields: () => ({
-    _id: { type: graphql.GraphQLString },
+    _id: { 
+      type: graphql.GraphQLString
+    },
     article: { type: graphql.GraphQLString },
     hashtags: { type: new graphql.GraphQLList(graphql.GraphQLString)},
     locations: {type: new graphql.GraphQLList(Location)},
     publish_date: {type: Date},
     media: {type: new graphql.GraphQLList(Media)},
-    comments: {
-      type: new graphql.GraphQLList(Comment)
-    },
     author: {
       type: User,
       resolve: async (post) =>{
         var user = await Mongo.db.collection('users').findOne({_id: new mongodb.ObjectId(post.author)})
         return user
+      }
+    },
+    comments: {
+      type: new graphql.GraphQLList(Comment),
+      resolve: async (post) =>{
+        // var user = await Mongo.db.collection('').findOne({_id: new mongodb.ObjectId(post.author)})
+        // return user
+        var comments = await Mongo.db.collection('post_comments').aggregate([
+            {$match: {"post_id": new mongodb.ObjectId(post._id)}},
+            {$graphLookup: {
+                from: "post_comments",
+                connectToField: "parent_comment_id",
+                connectFromField: "_id",
+                startWith: "$_id", // usually value of connectFromField                                                             
+                depthField: "n",
+                as: "comments"
+            }}
+        ]).toArray();
+        return comments
       }
     }
   })
@@ -82,9 +114,9 @@ const Date = new graphql.GraphQLScalarType({
 const User = new graphql.GraphQLObjectType({
   name: 'User',
   fields: () => ({
-    _id: { type: graphql.GraphQLInt },
+    _id: { type: graphql.GraphQLString },
     name: { type: graphql.GraphQLString },
-    email: { type: graphql.GraphQLString}
+    email: { type: graphql.GraphQLString},
   })
 })
 
@@ -110,6 +142,13 @@ const Comment = new graphql.GraphQLObjectType({
   fields: () => ({
     _id: { type: graphql.GraphQLString },
     user_id: { type: graphql.GraphQLString },
+    author: {
+      type: User,
+      resolve: async (comment) => {
+        var user = await Mongo.db.collection('users').findOne({_id:comment.user_id})
+        return user
+      }
+    },
     content: { type: graphql.GraphQLString },
     create_date:  {type: Date},
     update_date:  {type: Date},
@@ -118,7 +157,7 @@ const Comment = new graphql.GraphQLObjectType({
 })
 
 
-const schema = new graphql.GraphQLSchema({ 
+const schema = new graphql.GraphQLSchema({
   query: QueryRoot,
   // mutation: MutationRoot
 });

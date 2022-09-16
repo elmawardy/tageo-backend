@@ -144,34 +144,20 @@ postsRouter.route('/vote').post(
 postsRouter.route('/comment').post(
     jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
     async function(req,res){
-        await Mongo.db.collection('posts').updateOne({_id: new mongodb.ObjectId(req.body.post_id)},{$push: {
-            comments: {_id:new mongodb.ObjectId(), user_id: new mongodb.ObjectId(req.user.id),content: req.body.content,create_date: new Date(),updated_date:new Date()} 
-        }})
+
+        await Mongo.db.collection('post_comments').insertOne({
+            _id: new mongodb.ObjectId(),
+            post_id: new mongodb.ObjectId(req.body.post_id),
+            content: req.body.content,
+            create_date: new Date(),
+            updated_date:new Date(),
+            user_id: new mongodb.ObjectId(req.user.id),
+            parent_comment_id: req.body.parent_comment_id ? new mongodb.ObjectId(req.body.parent_comment_id) : null
+        })
 
         res.sendStatus(200)
     }
 )
-
-
-postsRouter.route('/subcomment').post(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
-    async function(req,res){
-
-        await Mongo.db.collection('posts').updateOne(
-            {
-                _id: new mongodb.ObjectId(req.body.post_id),
-                "comments._id": new mongodb.ObjectId(req.body.parent_comment_id)
-            },
-            {
-                $push:{
-                    "comments.$.comments" : {_id:new mongodb.ObjectId(), user_id: new mongodb.ObjectId(req.user.id),content: req.body.content,create_date: new Date(),updated_date:new Date()}
-                }
-            }),
-
-        res.sendStatus(200)
-    }
-)
-
 
 postsRouter.route('/editcomment').post(
     jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
