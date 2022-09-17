@@ -1,1 +1,1 @@
-![Code analysis](https://github.com/elmawardy/tageo-backend/actions/workflows/ci.yml/badge.svg?branch=ci)
+[![Code analysis](https://github.com/elmawardy/tageo-backend/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/elmawardy/tageo-backend/actions?query=workflow%3ACI+branch%3Amain)
