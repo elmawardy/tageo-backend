@@ -1,1 +1,1 @@
-[![Build Status](http://34.193.131.237:8080/buildStatus/icon?job=tageo)](http://34.193.131.237:8080/job/tageo/)
+![Code analysis](https://github.com/elmawardy/tageo-backend/actions/workflows/njsscan.yml/badge.svg)
