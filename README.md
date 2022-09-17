@@ -1,1 +1,1 @@
-![Code analysis](https://github.com/elmawardy/tageo-backend/actions/workflows/njsscan.yml/badge.svg?branch={{ current.branch }})
+![Code analysis](https://github.com/elmawardy/tageo-backend/actions/workflows/ci.yml/badge.svg?branch=ci)
