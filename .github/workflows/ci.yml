@@ -57,13 +57,15 @@ jobs:
     steps:
     - name: Checkout the code
       uses: actions/checkout@v3
-    - name: run tests
+    - name: Starting containers ...
       run: |
         docker-compose up -d
+    - name: Running tests ...
+      run: |
         yarn install
         npm install --global mocha
         mocha  
     - name: Stop containers
       if: always()
-      run: docker-compose -f "docker-compose.yml" down
+      run: docker-compose -f "docker-compose.yaml" down
       
