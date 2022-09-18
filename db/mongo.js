@@ -16,7 +16,7 @@ class Mongo {
 }
 
 Mongo.db = null
-Mongo.url = 'mongodb://db:27017'
+Mongo.url = 'mongodb://127.0.0.1:27017'
 Mongo.options = {
     bufferMaxEntries:   0,
     useNewUrlParser:    true,

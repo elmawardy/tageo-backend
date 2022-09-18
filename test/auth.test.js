@@ -1,20 +1,31 @@
-var axios = require('axios');
 var assert = require('assert');
+let chai = require('chai');
+let chaiHttp = require('chai-http');
+let server = require('../index');
+let should = chai.should();
 
-describe('Auth', function () {
-  describe('register', function () {
-    it('should return Ok', function () {
 
-      axios.post('http://127.0.0.1:3030/api/auth/register', {
-        "email":"test@example.com",
-        "password": "123",
-        "name":"Test User"
-      })
-      .then(function (response) {
-        assert.equal(response.status, 200);
-      })
-      .catch(function (error) {
-        assert.equal(response.status, 200);
+chai.use(chaiHttp);
+
+describe('Auth', () => {
+  describe('register', () => {
+    it('should return Ok', (done) => {
+
+      chai.request(server)
+      .post('/api/auth/register')
+      .send(
+        {
+          "email":"test@example.com",
+          "password": "123",
+          "name":"Test User"
+        }
+      )
+      .end((err, res) => {
+            // if (err) done(err);
+            res.should.have.status(200);
+            // res.body.should.be.a('array');
+            // res.body.length.should.be.eql(0);
+        done();
       });
 
     });

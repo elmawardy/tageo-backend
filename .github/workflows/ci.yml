@@ -57,15 +57,28 @@ jobs:
     steps:
     - name: Checkout the code
       uses: actions/checkout@v3
-    - name: Starting containers ...
+    - name: Starting containers
       run: |
         docker-compose up -d
-    - name: Running tests ...
+    - name: Running tests
       run: |
         yarn install
         npm install --global mocha
-        mocha  
+        yarn test
     - name: Stop containers
       if: always()
       run: docker-compose -f "docker-compose.yaml" down
+    
+    - name: Code Coverage Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: coverage/**/cobertura-coverage.xml
+        badge: true
+        fail_below_min: true
+        format: markdown
+        hide_branch_rate: false
+        hide_complexity: true
+        indicators: true
+        output: both
+        thresholds: '60 80'
       
