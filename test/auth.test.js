@@ -1,8 +1,22 @@
+var axios = require('axios');
 var assert = require('assert');
-describe('Array', function () {
-  describe('#indexOf()', function () {
-    it('should return -1 when the value is not present', function () {
-      assert.equal([1, 2, 3].indexOf(4), -1);
+
+describe('Auth', function () {
+  describe('register', function () {
+    it('should return Ok', function () {
+
+      axios.post('http://127.0.0.1:3030/api/auth/register', {
+        "email":"test@example.com",
+        "password": "123",
+        "name":"Test User"
+      })
+      .then(function (response) {
+        assert.equal(response.status, 200);
+      })
+      .catch(function (error) {
+        assert.equal(response.status, 200);
+      });
+
     });
   });
 });
