@@ -3,7 +3,7 @@ const {MongoClient} = require('mongodb');
 class Mongo {
 
     static async connect() {
-        try {       
+        try {
             if (this.db) return this.db
             var client = await MongoClient.connect(this.url, this.options)
             this.db = client.db('tageo')
@@ -16,7 +16,7 @@ class Mongo {
 }
 
 Mongo.db = null
-Mongo.url = 'mongodb://localhost:27017'
+Mongo.url = 'mongodb://127.0.0.1:27017'
 Mongo.options = {
     bufferMaxEntries:   0,
     useNewUrlParser:    true,
