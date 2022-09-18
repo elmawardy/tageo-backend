@@ -48,9 +48,9 @@ jobs:
     runs-on: ubuntu-latest
     # container: node:16-bullseye
 
-    services:
-      mongo:
-        image: mongo:6.0.1
+    # services:
+    #   mongo:
+    #     image: mongo:6.0.1
 
     name: mocha integration testing
     steps:
@@ -63,5 +63,8 @@ jobs:
         docker-compose up -d
         yarn install
         npm install --global mocha
-        mocha
+        mocha  
+     - name: Stop containers
+      if: always()
+      run: docker-compose -f "docker-compose.yml" down
       
