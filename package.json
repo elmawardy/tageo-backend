@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/elmawardy/tageo.git"
+    "url": "git+https://github.com/elmawardy/tageo-backend.git"
   },
   "author": "elmawardy",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/elmawardy/tageo/issues"
+    "url": "https://github.com/elmawardy/tageo-backend/issues"
   },
-  "homepage": "https://github.com/elmawardy/tageo#readme",
+  "homepage": "https://github.com/elmawardy/tageo-backend#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
