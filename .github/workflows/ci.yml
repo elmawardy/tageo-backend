@@ -65,7 +65,7 @@ jobs:
         yarn install
         npm install --global mocha
         mocha  
-     - name: Stop containers
-       if: always()
-       run: docker-compose -f "docker-compose.yml" down
+    - name: Stop containers
+      if: always()
+      run: docker-compose -f "docker-compose.yml" down
       
