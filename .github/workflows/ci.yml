@@ -58,7 +58,8 @@ jobs:
       uses: actions/checkout@v3
     - name: run tests
       run: |
-        docker-compose up
+        apt-get install docker-compose-plugin
+        docker-compose up -d
         yarn install
         npm install --global mocha
         mocha
