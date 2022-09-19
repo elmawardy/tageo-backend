@@ -6,18 +6,24 @@ const bcrypt = require('bcrypt');
 var jwt = require('express-jwt');
 var jwtoken = require('jsonwebtoken');
 var crypto = require('crypto');
+var sanitize = require('mongo-sanitize');
 mongodb = require('mongodb')
+
+require('dotenv').config();
 
 authRouter.route('/signin')
 .post(async function (req,res){
-    let user = await Mongo.db.collection('users').findOne({ email:req.body.email });
+
+    var email = sanitize(req.body.email);
+
+    let user = await Mongo.db.collection('users').findOne({ email });
       if (user){
         if (user.confirmed){
             var valid = await validPassword(req.body.password,user.password);
             if (valid){
                 delete user.password;
               
-                var token = jwtoken.sign({email:user.email,name:user.name,id:user._id}, 'shhhhhhared-secret', {algorithm : 'HS256'});
+                var token = jwtoken.sign({email:user.email,name:user.name,id:user._id}, process.env.JWT_KEY, {algorithm : 'HS256'});
                 res.send({user:{email:user.email,name:user.name,id:user._id},Jwt:token})
                 return
             }
@@ -36,7 +42,9 @@ authRouter.route('/signin')
 
 authRouter.route('/register').post(async function(req, res, next) {
     
-    let user = await Mongo.db.collection('users').findOne({ email:req.body.email });
+    var email = sanitize(req.body.email);
+
+    let user = await Mongo.db.collection('users').findOne({ email });
     if (user){
       res.statusCode = 409
       res.send({message:"Email already exists"})
@@ -123,7 +131,7 @@ authRouter.route('/sendreseturl').post(async function(req, res){
 })
 
 authRouter.route('/getbasicinfo').post(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
     async function(req,res,next){
       
       if (req.user){
@@ -142,7 +150,7 @@ authRouter.route('/getbasicinfo').post(
 
 authRouter.route('/updatebasicinfo')
 .post(
-  jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+  jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
   async function(req,res){
     await Mongo.db.collection('users').updateOne({_id: new mongodb.ObjectId(req.user.id)},{$set: {name: req.body.name}})
     res.sendStatus(200)
@@ -152,7 +160,7 @@ authRouter.route('/updatebasicinfo')
 
 authRouter.route('/changepassword')
 .post(
-  jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+  jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
   async function(req,res){
     var user = await Mongo.db.collection('users').findOne({_id : new mongodb.ObjectId(req.user.id)})
     if (user){
@@ -176,7 +184,7 @@ authRouter.route('/changepassword')
 
 authRouter.route('/deleteaccount')
 .post(
-  jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+  jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
   async function(req,res){
     var user = await Mongo.db.collection('users').findOne({_id : new mongodb.ObjectId(req.user.id)})
     if (user){

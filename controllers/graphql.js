@@ -2,6 +2,7 @@ const { Mongo } = require('../db/mongo');
 mongodb = require('mongodb')
 var graphql = require('graphql');
 var moment = require('moment');
+var sanitize = require('mongo-sanitize');
 
 const QueryRoot = new graphql.GraphQLObjectType({
   name: 'Query',
@@ -67,7 +68,8 @@ const Post = new graphql.GraphQLObjectType({
     author: {
       type: User,
       resolve: async (post) =>{
-        var user = await Mongo.db.collection('users').findOne({_id: new mongodb.ObjectId(post.author)})
+        var post_author = sanitize(post.author);
+        var user = await Mongo.db.collection('users').findOne({_id: new mongodb.ObjectId(post_author)})
         return user
       }
     },
