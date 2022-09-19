@@ -9,16 +9,21 @@ var crypto = require('crypto');
 var sanitize = require('mongo-sanitize');
 mongodb = require('mongodb')
 
+require('dotenv').config();
+
 authRouter.route('/signin')
 .post(async function (req,res){
-    let user = await Mongo.db.collection('users').findOne({ email:req.body.email });
+
+    var email = sanitize(req.body.email);
+
+    let user = await Mongo.db.collection('users').findOne({ email });
       if (user){
         if (user.confirmed){
             var valid = await validPassword(req.body.password,user.password);
             if (valid){
                 delete user.password;
               
-                var token = jwtoken.sign({email:user.email,name:user.name,id:user._id}, 'shhhhhhared-secret', {algorithm : 'HS256'});
+                var token = jwtoken.sign({email:user.email,name:user.name,id:user._id}, process.env.JWT_KEY, {algorithm : 'HS256'});
                 res.send({user:{email:user.email,name:user.name,id:user._id},Jwt:token})
                 return
             }
@@ -126,7 +131,7 @@ authRouter.route('/sendreseturl').post(async function(req, res){
 })
 
 authRouter.route('/getbasicinfo').post(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
     async function(req,res,next){
       
       if (req.user){
