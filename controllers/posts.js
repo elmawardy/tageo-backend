@@ -6,7 +6,7 @@ mongodb = require('mongodb')
 
 
 postsRouter.route('/add')
-.post(jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },)
+.post(jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },)
     ,async function(req,res){
     
     var groupsObjects = null;
@@ -62,7 +62,7 @@ postsRouter.route('/add')
 
 postsRouter.route('/getusertags')
 .post(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
     async function(req,res){
         var tags = await Mongo.db.collection('tags').find({userid: req.user.id}).toArray()
         res.send(tags)
@@ -71,7 +71,7 @@ postsRouter.route('/getusertags')
 
 postsRouter.route('/delete')
 .post(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
     async function(req,res){
         var tag = await Mongo.db.collection('tags').findOne({_id : new mongodb.ObjectId(req.body.tagId)})
         if (tag){
@@ -91,7 +91,7 @@ postsRouter.route('/delete')
 )
 
 postsRouter.route('/vote').post(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
     async function(req,res){
         
         if (req.body.state == "up"){
@@ -142,7 +142,7 @@ postsRouter.route('/vote').post(
 )
 
 postsRouter.route('/comment').post(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
     async function(req,res){
 
         await Mongo.db.collection('post_comments').insertOne({
@@ -160,7 +160,7 @@ postsRouter.route('/comment').post(
 )
 
 postsRouter.route('/editcomment').post(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
     async function(req,res){
         //var comment = await Mongo.db.collection('posts').findOne({_id: new mongodb.ObjectId(req.body.post_id)},{comments:1})
         var comment = await Mongo.db.collection('posts').findOne({_id: new mongodb.ObjectId(req.body.post_id),"comments.user_id":new mongodb.ObjectId(req.user.id),"comments._id": new mongodb.ObjectId(req.body.comment_id)},{"comments.user_id.$":1,_id :0,"comments.content":1,"comments.updated_date":1,"comments.create_date":1})
@@ -178,7 +178,7 @@ postsRouter.route('/editcomment').post(
 )
 
 postsRouter.route('/select').post(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
     async function(req,res){
 
         var findObject = {}
