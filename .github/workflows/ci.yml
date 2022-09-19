@@ -26,13 +26,13 @@ jobs:
     permissions:
       actions: write
       contents: read
-      
+
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v4
         with:
           paths_ignore: '["**/*.md","LICENSE"]'
-          same_content_newer: true
+          concurrent_skipping: 'same_content_newer'
       - if: ${{ steps.skip_check.outputs.should_skip != 'true' }}
         run: |
           echo "Workflow won't be skipped"
