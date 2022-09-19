@@ -28,6 +28,9 @@ jobs:
         with:
           paths_ignore: '["**/*.md","LICENSE"]'
           same_content_newer: true
+      - if: ${{ steps.skip_check.outputs.should_skip != 'true' }}
+        run: |
+          echo "Workflow won't be skipped"
 
   codeanalysis:
     needs: pre_job
