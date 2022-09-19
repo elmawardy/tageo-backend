@@ -22,6 +22,11 @@ jobs:
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
       paths_result: ${{ steps.skip_check.outputs.paths_result }}
+
+    permissions:
+      actions: write
+      contents: read
+      
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@v4
