@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 var jwt = require('express-jwt');
 var jwtoken = require('jsonwebtoken');
 var crypto = require('crypto');
+var sanitize = require('mongo-sanitize');
 mongodb = require('mongodb')
 
 authRouter.route('/signin')
@@ -36,7 +37,9 @@ authRouter.route('/signin')
 
 authRouter.route('/register').post(async function(req, res, next) {
     
-    let user = await Mongo.db.collection('users').findOne({ email:req.body.email });
+    var email = sanitize(req.body.email);
+
+    let user = await Mongo.db.collection('users').findOne({ email });
     if (user){
       res.statusCode = 409
       res.send({message:"Email already exists"})

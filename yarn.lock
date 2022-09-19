@@ -2181,6 +2181,11 @@ moment@^2.29.3:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
 
+mongo-sanitize@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/mongo-sanitize/-/mongo-sanitize-1.1.0.tgz#01346b55f90716a42de3a1f957500a11c0752c36"
+  integrity sha512-6gB9AiJD+om2eZLxaPKIP5Q8P3Fr+s+17rVWso7hU0+MAzmIvIMlgTYuyvalDLTtE/p0gczcvJ8A3pbN1XmQ/A==
+
 mongodb@^3.6.9:
   version "3.6.10"
   resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.6.10.tgz#f10e990113c86b195c8af0599b9b3a90748b6ee4"
