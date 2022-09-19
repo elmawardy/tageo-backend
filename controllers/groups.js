@@ -8,7 +8,7 @@ mongodb = require('mongodb')
 
 groupsRouter.route('/create')
 .post(
-jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
 async function (req,res){
     
     var group = await Mongo.db.collection('groups').findOne({name:req.body.name});
@@ -31,7 +31,7 @@ async function (req,res){
 })
 
 groupsRouter.route('/update').post(
-jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
 async function (req,res){
     var group = await Mongo.db.collection('groups').findOne({_id: new mongodb.ObjectId(req.body.id)})
 
@@ -73,7 +73,7 @@ async function (req,res){
 
 
 groupsRouter.route('/join').post(
-jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
 async function (req,res){
     await Mongo.db.collection('group_members').insertOne({group_id: new mongodb.ObjectId(req.body.group_id),user_id: new mongodb.ObjectId(req.user.id)})
     res.sendStatus(200)
@@ -82,7 +82,7 @@ async function (req,res){
 )
 
 groupsRouter.route('/leave').post(
-jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
 async function (req,res){
     await Mongo.db.collection('group_members').remove({group_id: new mongodb.ObjectId(req.body.group_id),user_id: new mongodb.ObjectId(req.user.id)})
     res.sendStatus(200)
@@ -91,7 +91,7 @@ async function (req,res){
 )
 
 groupsRouter.route('/usergroups').get(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
     async function (req,res){
         // var group_list = await Mongo.db.collection('group_members').find({user_id:new mongodb.ObjectId(req.user.id),group_id:new mongodb.ObjectId(req.query.group_id)})
         // .project(
@@ -115,7 +115,7 @@ groupsRouter.route('/usergroups').get(
 )
 
 groupsRouter.route('/customfieldtypes').get(
-    jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
     async function(req,res){
     var group_field_types = await Mongo.db.collection('posts').aggregate([
             {$match:{groups:{$in :[new mongodb.ObjectId(req.query.groupid)]}}},
