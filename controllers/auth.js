@@ -150,7 +150,7 @@ authRouter.route('/getbasicinfo').post(
 
 authRouter.route('/updatebasicinfo')
 .post(
-  jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+  jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
   async function(req,res){
     await Mongo.db.collection('users').updateOne({_id: new mongodb.ObjectId(req.user.id)},{$set: {name: req.body.name}})
     res.sendStatus(200)
@@ -160,7 +160,7 @@ authRouter.route('/updatebasicinfo')
 
 authRouter.route('/changepassword')
 .post(
-  jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+  jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
   async function(req,res){
     var user = await Mongo.db.collection('users').findOne({_id : new mongodb.ObjectId(req.user.id)})
     if (user){
@@ -184,7 +184,7 @@ authRouter.route('/changepassword')
 
 authRouter.route('/deleteaccount')
 .post(
-  jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+  jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
   async function(req,res){
     var user = await Mongo.db.collection('users').findOne({_id : new mongodb.ObjectId(req.user.id)})
     if (user){

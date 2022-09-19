@@ -46,7 +46,7 @@ jobs:
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
       actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status 
     runs-on: ubuntu-latest
-    name: code scanning
+    name: Code scanning
     steps:
     - name: Checkout the code
       uses: actions/checkout@v3
@@ -54,7 +54,7 @@ jobs:
       id: njsscan
       uses: ajinabraham/njsscan-action@master
       with:
-        args: '. --sarif --output results.sarif || true'
+        args: '. --sarif --output results.sarif'
 
     - name: Upload njsscan report
       uses: github/codeql-action/upload-sarif@v2
@@ -72,7 +72,7 @@ jobs:
     # services:
     #   mongo:
     #     image: mongo:6.0.1
-    name: mocha integration testing
+    name: Integration testing
     steps:
     - name: Checkout the code
       uses: actions/checkout@v3
