@@ -23,7 +23,7 @@ var upload = multer({ storage: storage });
 
 
 mediaRouter.route('/upload/photo').post(
-jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
 upload.single('photo')
 ,async function(req,res){
     res.sendStatus(200)
@@ -35,7 +35,7 @@ upload.single('photo')
 
 
 mediaRouter.route('/upload/video').post(
-jwt({ secret: 'shhhhhhared-secret', algorithms: ['HS256'] },),
+jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
 upload.single('photo')
 ,async function(req,res){
     res.sendStatus(200)
