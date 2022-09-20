@@ -37,6 +37,24 @@ jobs:
         run: |
           echo "Workflow won't be skipped"
 
+  njsscan:
+    runs-on: ubuntu-latest
+    name: njsscan code scanning
+    needs: pre_job
+    if: needs.pre_job.outputs.should_skip != 'true'
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v2
+    - name: nodejsscan scan
+      id: njsscan
+      uses: ajinabraham/njsscan-action@master
+      with:
+        args: '. --sarif --output results.sarif || true'
+    - name: Upload njsscan report
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: results.sarif
+
   sonarcloud:
     needs: pre_job
     if: needs.pre_job.outputs.should_skip != 'true'
@@ -86,6 +104,7 @@ jobs:
         name: codecov-umbrella # optional
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
+
     # - name: Code Coverage Report
     #   uses: irongut/CodeCoverageSummary@v1.3.0
     #   with:
