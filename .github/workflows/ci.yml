@@ -42,6 +42,10 @@ jobs:
     name: njsscan code scanning
     needs: pre_job
     if: needs.pre_job.outputs.should_skip != 'true'
+
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF 
     steps:
     - name: Checkout the code
       uses: actions/checkout@v2
