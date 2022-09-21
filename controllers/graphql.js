@@ -1,8 +1,8 @@
 const { Mongo } = require('../db/mongo');
 mongodb = require('mongodb')
-var graphql = require('graphql');
-var moment = require('moment');
-var sanitize = require('mongo-sanitize');
+let graphql = require('graphql');
+let moment = require('moment');
+let sanitize = require('mongo-sanitize');
 
 const QueryRoot = new graphql.GraphQLObjectType({
   name: 'Query',
