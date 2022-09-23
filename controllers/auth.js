@@ -38,6 +38,7 @@ authRouter.route('/changeinfo').post(
           return
       }
       res.statusCode = StatusCodes.UNAUTHORIZED;
+      res.send()
       return
   }
 )

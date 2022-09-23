@@ -27,7 +27,26 @@ const QueryRoot = new graphql.GraphQLObjectType({
 
         return posts;
       }
+    },
+    users: { 
+      type: new graphql.GraphQLList(User),
+      args: {
+        _id: { type: graphql.GraphQLString,}
+      },
+      resolve: async (_,{_id}) => {
+        var users = []
+        var filter = {};
+
+        if (_id != null){
+          filter._id = new mongodb.ObjectId(_id)
+        }
+
+        users = await Mongo.db.collection('users').find(filter).toArray();
+
+        return users;
+      }
     }
+  
   })
 })
 
@@ -119,6 +138,8 @@ const User = new graphql.GraphQLObjectType({
     _id: { type: graphql.GraphQLString },
     name: { type: graphql.GraphQLString },
     email: { type: graphql.GraphQLString},
+    avatar: {type: graphql.GraphQLString},
+    background: {type: graphql.GraphQLString}
   })
 })
 
