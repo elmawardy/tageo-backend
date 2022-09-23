@@ -7,9 +7,42 @@ var jwt = require('express-jwt');
 var jwtoken = require('jsonwebtoken');
 var crypto = require('crypto');
 var sanitize = require('mongo-sanitize');
+const { StatusCodes } = require('http-status-codes');
 mongodb = require('mongodb')
 
 require('dotenv').config();
+
+
+authRouter.route('/changeinfo').post(
+  jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
+  async function(req,res) {
+      var request_data = sanitize(req.body);
+      if (request_data.id == req.user.id){
+          var changes = {}
+          var changes_empty = true;
+          if (request_data) {
+            if (request_data.name){
+              changes.name=request_data.name;
+              changes_empty = false
+            }
+
+            if (!changes_empty) {
+              await Mongo.db.collection('users').updateOne({
+                _id: new mongodb.ObjectId(request_data.id),
+              },{$set:changes})
+            }
+            
+          }
+          res.statusCode = 200;
+          res.send()
+          return
+      }
+      res.statusCode = StatusCodes.UNAUTHORIZED;
+      res.send()
+      return
+  }
+)
+
 
 authRouter.route('/signin')
 .post(async function (req,res){
