@@ -3,3 +3,5 @@ package-lock.json
 image_tag.txt
 current_tag.txt
 data/uploads
+coverage
+.nyc_output
