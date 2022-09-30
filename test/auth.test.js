@@ -9,8 +9,8 @@ const { Mongo } = require('../db/mongo');
 chai.use(chaiHttp);
 
 describe('Auth', () => {
-  describe('register', () => {
-    it('should return Ok',(done) => {
+  describe('Register', () => {
+    it('Should return Ok',(done) => {
 
       chai.request(server)
       .post('/api/auth/register')
@@ -62,6 +62,27 @@ describe('Auth', () => {
 
 
     })
+  })
+
+  describe('Reset Password',()=>{
+
+    describe('Send reset URL',()=>{
+        it('Should return Ok',(done)=>{
+
+
+          chai.request(server)
+          .post('/api/auth/sendreseturl')
+          .send({
+            "email": "test@example.com"
+          })
+          .end((err, res)=>{
+            res.should.have.status(200)
+            done()
+          })
+
+        })
+    })
+
   })
 
 });
