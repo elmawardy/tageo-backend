@@ -9,6 +9,10 @@ const { Mongo } = require('../db/mongo');
 chai.use(chaiHttp);
 
 describe('Auth', () => {
+
+  var jwt = null;
+
+
   describe('Register', () => {
     it('Should return Ok',(done) => {
 
@@ -57,6 +61,9 @@ describe('Auth', () => {
           res.body.should.have.property('user').have.property('email').eql('test@example.com')
           res.body.should.have.property('user').have.property('name').eql('Test User')
           res.body.should.have.property('user').have.property('id') // TODO: make sure that the id complies to the mongo id format
+
+          jwt = res.body.Jwt
+
           done()
       })
 
@@ -64,25 +71,61 @@ describe('Auth', () => {
     })
   })
 
-  describe('Reset Password',()=>{
+  describe('Password Management',()=>{
+
+    var verificationCode = null
 
     describe('Send reset URL',()=>{
         it('Should return Ok',(done)=>{
 
+            chai.request(server)
+            .post('/api/auth/sendreseturl')
+            .send({
+              "email": "test@example.com"
+            })
+            .end((err, res)=>{
+              res.should.have.status(200)
+              done()
+            })
 
+
+        })
+
+        it('Verification code exists in the db', async ()=>{
+            console.log("get verification code from DB (Email client !ready yet)")
+            var dbObject = await Mongo.db.collection('reset_password_tokens').findOne({email:"test@example.com"})
+            verificationCode = dbObject.token
+            should.exist(dbObject.token)
+        })
+
+    })
+
+
+
+    describe('Change password',()=>{
+      
+      it('Should return Ok',(done)=>{
+  
           chai.request(server)
-          .post('/api/auth/sendreseturl')
+          .post('/api/auth/resetpassword')
           .send({
-            "email": "test@example.com"
+            "token": verificationCode,
+            "password": "123456"
           })
           .end((err, res)=>{
             res.should.have.status(200)
+            should.not.exist(err)
+            console.log("Verification Code:"+verificationCode+" response:"+res)
             done()
           })
-
-        })
+      
+      })
+  
     })
 
+
+
   })
+
 
 });
