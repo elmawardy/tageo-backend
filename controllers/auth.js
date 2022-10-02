@@ -109,22 +109,22 @@ authRouter.route('/confirmuser').post(async function(req, res){
 })
 
 
-authRouter.route('/reset_token_availability').post(async function (req, res) {
-   let token = await Mongo.db.collection('reset_password_tokens').findOne({token:req.body.token})
-   if (token){
-      if (token.expire_at < new Date().getTime()) {
-        res.statusCode = 400
-        res.send("Expired token")
-        return
-      }
+// authRouter.route('/reset_token_availability').post(async function (req, res) {
+//    let token = await Mongo.db.collection('reset_password_tokens').findOne({token:req.body.token})
+//    if (token){
+//       if (token.expire_at < new Date().getTime()) {
+//         res.statusCode = 400
+//         res.send("Expired token")
+//         return
+//       }
 
-      res.sendStatus(200)
-      return
-   }
+//       res.sendStatus(200)
+//       return
+//    }
 
-   res.sendstatus(401)
-   return
-})
+//    res.sendstatus(401)
+//    return
+// })
 
 authRouter.route('/resetpassword').post(async function(req, res){
    let token = await Mongo.db.collection('reset_password_tokens').findOne({token:req.body.token})

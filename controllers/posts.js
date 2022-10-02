@@ -10,6 +10,11 @@ postsRouter.route('/add')
     ,async function(req,res){
     
     var groupsObjects = null;
+    var progresses = []
+    var polls = []
+    var votes = []
+    var locations = []
+
     if (req.body.groups)
     groupsObjects = req.body.groups.map((group) => {
         return new mongodb.ObjectId(group)
@@ -26,6 +31,20 @@ postsRouter.route('/add')
     else 
         hashtags = [];
 
+
+    if (req.body.progresses)
+        progresses = req.body.progresses
+
+    if (req.body.polls)
+        polls = req.body.polls
+    
+    if (req.body.votes)
+        votes = req.body.votes
+
+    if (req.body.locations)
+        locations = req.body.locations.map(l => {return {coords:l}})
+        
+
     var post_id = 0;
     await Mongo.db.collection('posts').insertOne(
         {
@@ -33,9 +52,9 @@ postsRouter.route('/add')
             hashtags: hashtags,
             groups:groupsObjects,
             publish_date:new Date(),
-            locations: req.body.locations.map(l => {return {coords:l}}),
-            polls: req.body.polls,
-            progresses: req.body.progresses,
+            locations: locations,
+            polls: polls,
+            progresses: progresses,
             media: [],
             votes:[],
             author: new mongodb.ObjectId(req.user.id)
@@ -177,54 +196,54 @@ postsRouter.route('/editcomment').post(
     }
 )
 
-postsRouter.route('/select').post(
-    jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
-    async function(req,res){
+// postsRouter.route('/select').post(
+//     jwt({ secret: process.env.JWT_KEY, algorithms: ['HS256'] },),
+//     async function(req,res){
 
-        var findObject = {}
+//         var findObject = {}
 
-        if (req.body.groups){
-            findObject.groups = {$in:req.body.groups.map((group)=>{
-                return new mongodb.ObjectId(group)
-            })}
-        }
-        if (req.body.range_in_meters && req.body.latitude && req.body.longitude){
-           findObject.coordinates = {$near : { $geometry : {type: "Point", coordinates: [parseFloat (req.body.longitude),parseFloat (req.body.latitude)] },$maxDistance: parseFloat (req.body.range_in_meters) } }
-        }
-        if (req.body.labels){
-            findObject.labels = {$in:req.body.labels}
-        }
-        var sort = {publish_date:-1}
-        if (req.body.top && req.body.top == true){
-            sort.votes = -1
-            delete sort.publish_date
-        }
+//         if (req.body.groups){
+//             findObject.groups = {$in:req.body.groups.map((group)=>{
+//                 return new mongodb.ObjectId(group)
+//             })}
+//         }
+//         if (req.body.range_in_meters && req.body.latitude && req.body.longitude){
+//            findObject.coordinates = {$near : { $geometry : {type: "Point", coordinates: [parseFloat (req.body.longitude),parseFloat (req.body.latitude)] },$maxDistance: parseFloat (req.body.range_in_meters) } }
+//         }
+//         if (req.body.labels){
+//             findObject.labels = {$in:req.body.labels}
+//         }
+//         var sort = {publish_date:-1}
+//         if (req.body.top && req.body.top == true){
+//             sort.votes = -1
+//             delete sort.publish_date
+//         }
 
-        var skip = req.body.skip ? req.body.skip : 0;
+//         var skip = req.body.skip ? req.body.skip : 0;
 
-        var posts = await Mongo.db.collection('posts')
-        .find(findObject)
-        .project({
-            _id:1,
-            title:1,
-            coordinates:1,
-            description:1,
-            labels:1,
-            user_id:1,
-            votes:1,
-            coordinates:1,
-            publish_date:1,
-            media:1,
-            comments_count:{
-                $cond:{ 
-                    if:{$isArray:"$comments"},then: {$size:"$comments"},
-                    else: 0 
-                }
-            }})
-        .sort(sort).skip(skip).limit(5).toArray()
-        res.send({posts})
-        return
-    }
-)
+//         var posts = await Mongo.db.collection('posts')
+//         .find(findObject)
+//         .project({
+//             _id:1,
+//             title:1,
+//             coordinates:1,
+//             description:1,
+//             labels:1,
+//             user_id:1,
+//             votes:1,
+//             coordinates:1,
+//             publish_date:1,
+//             media:1,
+//             comments_count:{
+//                 $cond:{ 
+//                     if:{$isArray:"$comments"},then: {$size:"$comments"},
+//                     else: 0 
+//                 }
+//             }})
+//         .sort(sort).skip(skip).limit(5).toArray()
+//         res.send({posts})
+//         return
+//     }
+// )
 
 module.exports = postsRouter;
