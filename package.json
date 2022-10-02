@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter cobertura mocha --exit",
+    "test": "nyc --reporter cobertura mocha --timeout 5000 --exit",
     "dev": "nodemon index.js"
   },
   "repository": {

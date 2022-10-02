@@ -197,9 +197,9 @@ authRouter.route('/changepassword')
   async function(req,res){
     var user = await Mongo.db.collection('users').findOne({_id : new mongodb.ObjectId(req.user.id)})
     if (user){
-      var validpassword = await validPassword(req.body.CurrentPassword,user.password);
+      var validpassword = await validPassword(req.body.oldpassword,user.password);
       if (validpassword){
-        var newpassword = await hashPassword(req.body.Newpassword)
+        var newpassword = await hashPassword(req.body.newpassword)
         await Mongo.db.collection('users').updateOne({_id: new mongodb.ObjectId(req.user.id)},{$set: {password: newpassword}})
         res.sendStatus(200)
         return

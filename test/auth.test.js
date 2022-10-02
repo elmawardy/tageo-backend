@@ -5,16 +5,25 @@ let server = require('../index');
 let should = chai.should();
 const { Mongo } = require('../db/mongo');
 
+var {Bootstrapper} = require('./bootstrap')
+
 
 chai.use(chaiHttp);
 
 describe('Auth', () => {
 
   var jwt = null;
+  var userInfo = null
 
 
   describe('Register', () => {
+    
+    before(async ()=>{
+        await Bootstrapper.prepareDB();
+    })
+
     it('Should return Ok',(done) => {
+
 
       chai.request(server)
       .post('/api/auth/register')
@@ -63,6 +72,7 @@ describe('Auth', () => {
           res.body.should.have.property('user').have.property('id') // TODO: make sure that the id complies to the mongo id format
 
           jwt = res.body.Jwt
+          userInfo = res.body.user
 
           done()
       })
@@ -102,7 +112,7 @@ describe('Auth', () => {
 
 
 
-    describe('Change password',()=>{
+    describe('Reset password',()=>{
       
       it('Should return Ok',(done)=>{
   
@@ -124,6 +134,121 @@ describe('Auth', () => {
     })
 
 
+    describe('Change password',()=>{
+
+      before('Getting Jwt',(done) => {
+        
+        console.log("signing in..")
+        chai.request(server)
+          .post('/api/auth/signin')
+          .send({
+            "email": "test@example.com",
+            "password": "123456"
+          })
+          .end((err, res)=>{
+            res.should.have.status(200)
+            res.body.should.have.property('Jwt')
+            should.not.exist(err)
+
+            jwt = res.body.Jwt
+            console.log("signed in")
+            done();
+          })
+
+
+      });
+      
+      it('Should return Ok',(done)=>{
+          console.log("changing password...")
+          chai.request(server)
+          .post('/api/auth/changepassword')
+          .set('Authorization','Bearer '+jwt)
+          .set('Content-Type','application/json')
+          .send({
+            "oldpassword": "123456",
+            "newpassword": "123"
+          })
+          .end((err, res)=>{
+            res.should.have.status(200)
+            should.not.exist(err)
+            done()
+          })
+      
+      })
+
+
+  
+    })
+
+
+    describe("Send reset URL",()=>{
+        it('Should return Ok',(done)=>{
+          
+          chai.request(server)
+          .post('/api/auth/sendreseturl')
+          .send({
+            "email": "test@example.com",
+          })
+          .end((err, res)=>{
+            res.should.have.status(200)
+            should.not.exist(err)
+            done()
+          })
+      
+      })
+    })
+
+    
+
+  })
+
+
+  describe("User info",()=>{
+      
+      describe('Get basic info',()=>{
+
+        it('Should return expected result',(done)=>{
+            chai.request(server)
+            .post('/api/auth/getbasicinfo')
+            .set('Authorization','Bearer '+jwt)
+            .set('Content-Type','application/json')
+            .end((err, res)=>{
+              res.body.should.have.property('Name')
+              res.body.should.have.property('Email')
+              res.should.have.status(200)
+              should.not.exist(err)
+
+              userId = res.body.userId
+              done()
+            })
+        
+        })
+
+    
+      })
+
+
+      describe('Change Info',()=>{
+
+        it('Should return Ok',(done)=>{
+            chai.request(server)
+            .post('/api/auth/changeinfo')
+            .set('Authorization','Bearer '+jwt)
+            .set('Content-Type','application/json')
+            .send({
+              "id": userInfo.id,
+              "name": "New Name"
+            })
+            .end((err, res)=>{
+              res.should.have.status(200)
+              should.not.exist(err)
+              done()
+            })
+        
+        })
+
+    
+      })
 
   })
 
