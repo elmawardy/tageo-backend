@@ -5,7 +5,8 @@ let server = require('../index');
 let should = chai.should();
 const { Mongo } = require('../db/mongo');
 
-var {Bootstrapper} = require('./bootstrap')
+var {Bootstrapper} = require('./bootstrap');
+const { StatusCodes } = require('http-status-codes');
 
 
 chai.use(chaiHttp);
@@ -44,6 +45,24 @@ describe('Auth', () => {
 
     });
 
+
+    it("Should return Unauthorized on unconfirmed signin",(done)=>{
+
+      chai.request(server)
+      .post('/api/auth/signin')
+      .send(
+        {
+          "email":"test@example.com",
+          "password": "123"
+        }
+      )
+      .end((err,res)=>{
+          res.should.have.status(401)
+          done()
+      })
+
+    })
+
     after(async function(){
         console.log("confirming user through DB (Email client !ready yet)")
         await Mongo.db.collection('users').updateOne({email:"test@example.com"},{$set: {confirmed: true}});
@@ -53,6 +72,31 @@ describe('Auth', () => {
 
 
   describe('Signin',()=>{
+
+
+    it('Should return 409',(done) => {
+
+
+      chai.request(server)
+      .post('/api/auth/register')
+      .send(
+        {
+          "email":"test@example.com",
+          "password": "123",
+          "name":"Test User"
+        }
+      )
+      .end((err, res) => {
+            // if (err) done(err);
+            res.should.have.status(StatusCodes.CONFLICT);
+            // res.body.should.be.a('array');
+            // res.body.length.should.be.eql(0);
+            done()
+      })
+
+    });
+
+
     it('Should receive expected response',(done)=>{
 
 
@@ -79,6 +123,7 @@ describe('Auth', () => {
 
 
     })
+    
   })
 
   describe('Password Management',()=>{
@@ -245,6 +290,55 @@ describe('Auth', () => {
               done()
             })
         
+        })
+
+        it("Should return Unauthorized",(done)=>{
+
+          chai.request(server)
+            .post('/api/auth/changeinfo')
+            .set('Authorization','Bearer '+jwt)
+            .set('Content-Type','application/json')
+            .send({
+              "id": "6271449d16f5de5a1c8f2998", // dump id
+              "name": "New Name"
+            })
+            .end((err, res)=>{
+              res.should.have.status(401)
+              done()
+            })
+
+        })
+
+        
+        it("Should return 401",(done)=>{ 
+          // Generally speaking this should return 400 since the input is empty but to make the backend code simplier we will just return 401 if both Unauthorized or empty request
+          chai.request(server)
+            .post('/api/auth/changeinfo')
+            .set('Authorization','Bearer '+jwt)
+            .set('Content-Type','application/json')
+            .send({})
+            .end((err, res)=>{
+              res.should.have.status(401)
+              done()
+            })
+
+        })
+
+
+        it("Should return Bad request",(done)=>{ 
+          // Generally speaking this should return 400 since the input is empty but to make the backend code simplier we will just return 401 if both Unauthorized or empty request
+          chai.request(server)
+            .post('/api/auth/changeinfo')
+            .set('Authorization','Bearer '+jwt)
+            .set('Content-Type','application/json')
+            .send({
+              "id": userInfo.id,
+            })
+            .end((err, res)=>{
+              res.should.have.status(400)
+              done()
+            })
+
         })
 
     

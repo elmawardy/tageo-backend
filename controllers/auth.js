@@ -30,6 +30,10 @@ authRouter.route('/changeinfo').post(
               await Mongo.db.collection('users').updateOne({
                 _id: new mongodb.ObjectId(request_data.id),
               },{$set:changes})
+            }else{
+              res.statusCode = StatusCodes.BAD_REQUEST;
+              res.send({error:"invalid/missing input"})
+              return
             }
             
           }
