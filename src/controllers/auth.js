@@ -79,9 +79,9 @@ authRouter.route('/signin')
 
 authRouter.route('/register').post(async function(req, res, next) {
     
-    var email = sanitize(req.body.email);
+    var user_email = sanitize(req.body.email);
 
-    let user = await Mongo.db.collection('users').findOne({ email });
+    let user = await Mongo.db.collection('users').findOne({ email: user_email });
     if (user){
       res.statusCode = 409
       res.send({message:"Email already exists"})
@@ -94,7 +94,9 @@ authRouter.route('/register').post(async function(req, res, next) {
 
     await Mongo.db.collection('users').insertOne({email:req.body.email,password:hash,name:req.body.name,confirmed:false,verification_code:code});
 
-    await Email.sendMail("Tageo",req.body.email,"Tageo Verification","verifyemail.html",{code})
+
+    var email_channel = new Email();
+    await email_channel.Send("Tageo",req.body.email,"Tageo Verification",{code},"verifyemail.html")
 
     res.sendStatus(200);
   });
@@ -154,13 +156,16 @@ authRouter.route('/sendreseturl').post(async function(req, res){
   if (user){
     // expire token after 30 minutes and insert in the db
     await Mongo.db.collection('reset_password_tokens').insertOne({email:req.body.email,token,expire_at:new Date(new Date().getTime() + 30*60000)})
-    await Email.sendMail("Tageo",req.body.email,"Reset Password","reset_password.html",{
+
+
+    var email_channel = new Email();
+    await email_channel.Send("Tageo",req.body.email,"Reset Password",{
       name: user.name,
       operating_system: req.headers['user-agent'] || "Unknown",
       browser_name: req.headers['user-agent'] || "Unknown",
       action_url: 'http://localhost:3030/resetpassword?token='+token,
       support_url: 'http://localhost:3030/support'
-    })
+    },"reset_password.html")
   }
   
   res.sendStatus(200)

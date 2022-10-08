@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter cobertura mocha --timeout 5000 --exit",
-    "dev": "nodemon index.js"
+    "test": "nyc --reporter cobertura mocha -r ts-node/register src/test/**/*.* --timeout 5000 --exit",
+    "dev": "nodemon ./src/index.js",
+    "debug": "ts-node ./src/index.js"
   },
   "repository": {
     "type": "git",
@@ -47,7 +48,9 @@
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
     "mocha": "^10.0.0",
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
   },
   "nodemonConfig": {
     "restartable": "rs",
