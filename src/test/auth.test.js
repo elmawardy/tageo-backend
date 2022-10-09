@@ -147,10 +147,7 @@ describe('Auth', () => {
         })
 
         it('Verification code exists in the db', async ()=>{
-            console.log("get verification code from DB (Email client !ready yet)")
-            var dbObject = await Mongo.db.collection('reset_password_tokens').findOne({email:"test@example.com"})
-            verificationCode = dbObject.token
-            should.exist(dbObject.token)
+           verificationCode = await DatabaseHelpers.getVerificationCodeByEmail("test@example.com")
         })
 
     })
