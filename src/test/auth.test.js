@@ -7,6 +7,7 @@ const { Mongo } = require('../db/mongo');
 
 var {Bootstrapper} = require('./bootstrap');
 const { StatusCodes } = require('http-status-codes');
+const {DatabaseHelpers} = require('../helpers/DatabaseHelpers')
 
 
 chai.use(chaiHttp);
@@ -63,9 +64,8 @@ describe('Auth', () => {
 
     })
 
-    after(async function(){
-        console.log("confirming user through DB (Email client !ready yet)")
-        await Mongo.db.collection('users').updateOne({email:"test@example.com"},{$set: {confirmed: true}});
+    it("Should be able to confirm user directly from db",()=>{
+        return DatabaseHelpers.ConfirmUserDirectlyFromDB("test@example.com")
     })
 
   });

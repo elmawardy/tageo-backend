@@ -9,7 +9,7 @@ interface INotificationChannel
 }
 
 
-class Email implements INotificationChannel{
+class Email implements INotificationChannel {
 
   async Send(from: String, to: String, subject: String, body: String, template: String) {
 
