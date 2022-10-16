@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter cobertura mocha -r ts-node/register src/test/**/*.* --timeout 5000 --exit",
+    "test": "nyc --reporter cobertura --reporter lcov mocha -r ts-node/register src/test/**/*.* --timeout 5000 --exit",
     "dev": "nodemon ./src/index.js",
     "debug": "ts-node ./src/index.js"
   },
