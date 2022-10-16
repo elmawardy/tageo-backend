@@ -94,6 +94,10 @@ jobs:
         name: codecov-umbrella # optional
         fail_ci_if_error: true # optional (default = false)
         verbose: true # optional (default = false)
+    - persist_to_workspace:
+        root: workspace
+        paths:
+          - coverage
 
     # - name: Code Coverage Report
     #   uses: irongut/CodeCoverageSummary@v1.3.0
@@ -115,6 +119,9 @@ jobs:
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:
+      - attach_workspace:
+          at: /tmp/workspace
+          
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
