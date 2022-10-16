@@ -120,14 +120,19 @@ jobs:
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
       - uses: actions/download-artifact@master
         with:
           name: coverage-report
           path: coverage
 
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Stop containers
+        if: always()
+        run: ls -ltr && pwd
+      
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
