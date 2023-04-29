@@ -51,8 +51,8 @@ class Email implements INotificationChannel {
   ReadHtmlFile(path, callback) : void{
     fs.readFile(path, {encoding: 'utf-8'}, function (err, html) {
         if (err) {
+            // callback(err);
             throw err;
-            callback(err);
         }
         else {
             callback(null, html);

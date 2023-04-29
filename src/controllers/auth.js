@@ -1,6 +1,6 @@
 const express = require('express');
 const { Mongo } = require('../db/mongo');
-const {Email} = require('../helpers/email');
+const {Email} = require('../helpers/email.ts');
 const authRouter = express.Router();
 const bcrypt = require('bcrypt');
 var jwt = require('express-jwt');

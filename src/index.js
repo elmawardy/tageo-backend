@@ -21,8 +21,8 @@ app.use(morgan('[:date[clf]] :remote-addr - :method :url :status :res[content-le
 // parse body
 app.use(bodyParser.json());
 // serve static files from this directory
-app.use(express.static(path.join(__dirname,'/www/')))
-app.use('/data/uploads',express.static(path.join(__dirname,'/data/uploads')))
+app.use(express.static(path.join(__dirname,'../www/')))
+app.use('/data/uploads',express.static(path.join(__dirname,'../data/uploads')))
 
 app.set('views','./views')
 app.set('view engine','ejs')
