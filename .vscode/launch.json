@@ -17,6 +17,7 @@
             ],
             "program": "${workspaceFolder}\\src\\index.js",
             "preLaunchTask": "tsc: build - tsconfig.json",
+            "remoteRoot": "${workspaceFolder}",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
             ]
